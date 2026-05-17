@@ -12,7 +12,9 @@ class TipoUsuarioSeeder extends Seeder
         $tipos = ['Administrador', 'Ganadero', 'Veterinario'];
 
         foreach ($tipos as $tipo) {
-            TipoUsuario::create(['nombre' => $tipo]);
+            TipoUsuario::firstOrCreate(['nombre' => $tipo]);
         }
+
+        $this->command->info('  ✔ TipoUsuario: Administrador, Ganadero, Veterinario');
     }
 }

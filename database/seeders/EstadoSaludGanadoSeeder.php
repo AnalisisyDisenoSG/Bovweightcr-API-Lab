@@ -12,7 +12,9 @@ class EstadoSaludGanadoSeeder extends Seeder
         $estados = ['Sano', 'En tratamiento', 'Crítico'];
 
         foreach ($estados as $estado) {
-            EstadoSaludGanado::create(['nombre' => $estado]);
+            EstadoSaludGanado::firstOrCreate(['nombre' => $estado]);
         }
+
+        $this->command->info('  ✔ EstadoSaludGanado: Sano, En tratamiento, Crítico');
     }
 }

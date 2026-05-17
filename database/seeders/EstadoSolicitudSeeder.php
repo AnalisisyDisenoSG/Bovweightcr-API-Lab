@@ -12,7 +12,9 @@ class EstadoSolicitudSeeder extends Seeder
         $estados = ['Pendiente', 'Aprobado', 'Rechazado'];
 
         foreach ($estados as $estado) {
-            EstadoSolicitud::create(['nombre' => $estado]);
+            EstadoSolicitud::firstOrCreate(['nombre' => $estado]);
         }
+
+        $this->command->info('  ✔ EstadoSolicitud: Pendiente, Aprobado, Rechazado');
     }
 }

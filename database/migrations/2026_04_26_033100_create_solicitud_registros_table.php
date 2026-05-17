@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('solicitud_registros', function (Blueprint $table) {
@@ -14,8 +15,8 @@ return new class extends Migration {
             $table->string('apellidos');
             $table->string('correo');
             $table->string('numero_celular');
-            $table->string('archivo_cedula'); // ruta en storage
-            $table->string('archivo_certificado'); // ruta en storage
+            $table->string('archivo_cedula')->nullable(); // ruta en storage
+            $table->string('archivo_certificado')->nullable(); // ruta en storage
             $table->timestamps();
         });
     }

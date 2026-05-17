@@ -12,7 +12,9 @@ class EstadoComercialGanadoSeeder extends Seeder
         $estados = ['Vendido', 'En venta', 'En propiedad'];
 
         foreach ($estados as $estado) {
-            EstadoComercialGanado::create(['nombre' => $estado]);
+            EstadoComercialGanado::firstOrCreate(['nombre' => $estado]);
         }
+
+        $this->command->info('  ✔ EstadoComercialGanado: Vendido, En venta, En propiedad');
     }
 }

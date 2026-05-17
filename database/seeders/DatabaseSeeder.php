@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
             EstadoSolicitudSeeder::class,
             EstadoSaludGanadoSeeder::class,
             EstadoComercialGanadoSeeder::class,
+            UserSeeder::class,
+            SolicitudRegistroSeeder::class,
         ]);
     }
 }
