@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\SolicitudRegistroController;
 use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Middleware\EsAdministrador;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\EstimacionPesoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,4 +46,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/solicitudes/{id}', [SolicitudRegistroController::class, 'show'])->name('solicitudes.show');
         Route::put('/solicitudes/{id}/revisar', [SolicitudRegistroController::class, 'revisar'])->name('solicitudes.revisar');
     });
+
+    //Rutas de Estimacion de peso
+    Route::prefix('estimacion')->group(function () {
+    Route::get('/health', [EstimacionPesoController::class, 'healthCheck']);
+    Route::post('/estimar', [EstimacionPesoController::class, 'estimar']);
+    Route::post('/estimar-batch', [EstimacionPesoController::class, 'estimarBatch']);
 });
+});
+
+
+
