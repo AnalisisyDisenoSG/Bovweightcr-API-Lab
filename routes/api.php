@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FincaController;
 use App\Http\Controllers\Api\SolicitudRegistroController;
 use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Middleware\EsAdministrador;
@@ -17,6 +18,14 @@ use App\Http\Controllers\Api\EstimacionPesoController;
 | Rutas de admin (auth:sanctum + EsAdministrador): CRUD usuarios y solicitudes.
 |
 */
+
+// Rutas de fincas (CRUD)
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::apiResource('fincas', FincaController::class);
+
+});
+
 
 // ── Rutas públicas ────────────────────────────────────────────────────────────
 Route::prefix('auth')->name('auth.')->group(function () {
@@ -46,6 +55,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/solicitudes/{id}', [SolicitudRegistroController::class, 'show'])->name('solicitudes.show');
         Route::put('/solicitudes/{id}/revisar', [SolicitudRegistroController::class, 'revisar'])->name('solicitudes.revisar');
     });
+
+    
 
     //Rutas de Estimacion de peso
     Route::prefix('estimacion')->group(function () {
