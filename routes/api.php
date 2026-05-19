@@ -57,16 +57,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/solicitudes/{id}', [SolicitudRegistroController::class, 'show'])->name('solicitudes.show');
         Route::put('/solicitudes/{id}/revisar', [SolicitudRegistroController::class, 'revisar'])->name('solicitudes.revisar');
     });
-
-    
-
-    //Rutas de Estimacion de peso
-    Route::prefix('estimacion')->group(function () {
-    Route::get('/health', [EstimacionPesoController::class, 'healthCheck']);
-    Route::post('/estimar', [EstimacionPesoController::class, 'estimar']);
-    Route::post('/estimar-batch', [EstimacionPesoController::class, 'estimarBatch']);
 });
-});
-
-
-
