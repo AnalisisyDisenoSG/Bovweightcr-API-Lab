@@ -34,22 +34,24 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('reset-password');
 });
 
-// Solicitud de registro (pública — el solicitante aún no tiene cuenta)
 Route::post('/solicitudes', [SolicitudRegistroController::class, 'store'])->name('solicitudes.store');
+
+// Estimacion de peso (público para desarrollo)
+Route::prefix('estimacion')->group(function () {
+    Route::get('/health', [EstimacionPesoController::class, 'healthCheck']);
+    Route::post('/estimar', [EstimacionPesoController::class, 'estimar']);
+    Route::post('/estimar-batch', [EstimacionPesoController::class, 'estimarBatch']);
+});
 
 // ── Rutas protegidas (usuario autenticado) ────────────────────────────────────
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::get('/auth/me', [AuthController::class, 'me'])->name('auth.me');
 
-    // ── Rutas de administración (requiere rol Administrador) ──────────────────
     Route::middleware(EsAdministrador::class)->group(function () {
-
-        // CRUD de usuarios (HU-01.4 a HU-01.7)
         Route::apiResource('usuarios', UsuarioController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy']);
 
-        // Gestión de solicitudes de registro (HU-01.8)
         Route::get('/solicitudes', [SolicitudRegistroController::class, 'index'])->name('solicitudes.index');
         Route::get('/solicitudes/pendientes', [SolicitudRegistroController::class, 'pendientes'])->name('solicitudes.pendientes');
         Route::get('/solicitudes/{id}', [SolicitudRegistroController::class, 'show'])->name('solicitudes.show');

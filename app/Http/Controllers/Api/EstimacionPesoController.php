@@ -23,21 +23,20 @@ class EstimacionPesoController extends Controller
         $request->validate([
             'image' => 'required|image|max:10240',
             'ganado_id' => 'required|exists:ganados,id',
-            'reference_length_cm' => 'nullable|numeric|min:1|max:500',
             'breed' => 'nullable|string|in:brahman,cebu,criollo,default',
+            'distance_cm' => 'nullable|numeric',
+            'camera_fov' => 'nullable|numeric',
         ]);
 
         $path = $request->file('image')->store('estimaciones', 'public');
 
         try {
-            $response = Http::timeout(60)->attach(
-                'image',
-                file_get_contents($request->file('image')->path()),
-                $request->file('image')->getClientOriginalName()
-            )->post("{$this->mlServiceUrl}/api/estimate", [
-                'reference_length_cm' => $request->input('reference_length_cm', 100),
-                'breed' => $request->input('breed', 'default'),
-            ]);
+            $response = Http::timeout(60)
+                ->attach('image', file_get_contents($request->file('image')->path()), $request->file('image')->getClientOriginalName())
+                ->attach('breed', $request->input('breed', 'default'))
+                ->attach('distance_cm', (string) $request->input('distance_cm', 500))
+                ->attach('camera_fov', (string) $request->input('camera_fov', 24))
+                ->post("{$this->mlServiceUrl}/api/estimate");
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'No se pudo conectar con el servicio de estimacion',
@@ -56,27 +55,19 @@ class EstimacionPesoController extends Controller
 
         $registro = RegistroPeso::create([
             'ganado_id' => $request->ganado_id,
-            'peso_estimado' => $data['peso_estimado_kg'],
+            'peso_estimado' => $data['peso_estimado_kg'] ?? 0,
             'fecha' => now(),
-            'confianza' => $data['confianza'],
-            'metodo' => $data['metodo'],
+            'confianza' => $data['confianza'] ?? 0,
+            'metodo' => $data['metodo'] ?? 'unknown',
             'imagen_path' => $path,
-            'medidas' => $data['medidas'],
+            'medidas' => $data['medidas'] ?? null,
             'raza_estimacion' => $request->input('breed', 'default'),
         ]);
 
         return response()->json([
             'registro' => $registro,
-            'estimacion' => [
-                'peso_estimado_kg' => $data['peso_estimado_kg'],
-                'rango_min_kg' => $data['rango_min_kg'],
-                'rango_max_kg' => $data['rango_max_kg'],
-                'confianza' => $data['confianza'],
-                'metodo' => $data['metodo'],
-                'medidas' => $data['medidas'],
-                'referencia_detectada' => $data['referencia_detectada'],
-            ],
-            'advertencia' => $data['advertencia'],
+            'estimacion' => $data,
+            'advertencia' => $data['advertencia'] ?? 'Estimacion aproximada.',
         ], 201);
     }
 
@@ -86,8 +77,9 @@ class EstimacionPesoController extends Controller
             'images' => 'required|array|min:2|max:5',
             'images.*' => 'image|max:10240',
             'ganado_id' => 'required|exists:ganados,id',
-            'reference_length_cm' => 'nullable|numeric',
             'breed' => 'nullable|string|in:brahman,cebu,criollo,default',
+            'distance_cm' => 'nullable|numeric',
+            'camera_fov' => 'nullable|numeric',
         ]);
 
         $httpRequest = Http::timeout(120);
@@ -101,10 +93,11 @@ class EstimacionPesoController extends Controller
         }
 
         try {
-            $response = $httpRequest->post("{$this->mlServiceUrl}/api/estimate/batch", [
-                'reference_length_cm' => $request->input('reference_length_cm', 100),
-                'breed' => $request->input('breed', 'default'),
-            ]);
+            $response = $httpRequest
+                ->attach('breed', $request->input('breed', 'default'))
+                ->attach('distance_cm', (string) $request->input('distance_cm', 500))
+                ->attach('camera_fov', (string) $request->input('camera_fov', 24))
+                ->post("{$this->mlServiceUrl}/api/estimate/batch");
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'No se pudo conectar con el servicio de estimacion',
