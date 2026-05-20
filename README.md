@@ -1,58 +1,200 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# BovWeight CR — API Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST para la gestión de ganado bovino. Desarrollada para el curso IF7100 Ingeniería del Software, UCR Sede Guanacaste.
 
-## About Laravel
+**Stack:** Laravel 13 · PHP 8.3 · MySQL · Laravel Sanctum
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requisitos previos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3+
+- Composer
+- MySQL 8.0+
+- Node.js (solo para compilar assets con Vite, si aplica)
+- Una cuenta de Gmail con [App Password](https://myaccount.google.com/apppasswords) habilitada (para correos transaccionales)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Instalación
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clonar el repositorio
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <url-del-repositorio>
+cd Bovweightcr-API
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Instalar dependencias PHP
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Configurar variables de entorno
 
-## Code of Conduct
+Copia el archivo de ejemplo y edítalo:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+cp .env.example .env
+```
 
-## Security Vulnerabilities
+> Si no existe `.env.example`, crea un archivo `.env` con el contenido de la sección de abajo.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Edita `.env` con tus valores:
 
-## License
+```env
+APP_NAME="BovWeight CR"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8000
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=bovweight
+DB_USERNAME=root
+DB_PASSWORD=tu_password_mysql
+
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=tu_correo@gmail.com
+MAIL_PASSWORD="xxxx xxxx xxxx xxxx"
+MAIL_FROM_ADDRESS="tu_correo@gmail.com"
+MAIL_FROM_NAME="BovWeight CR"
+
+FRONTEND_URL=http://localhost:5173
+```
+
+> **MAIL_PASSWORD** debe ser un App Password de Google de 16 caracteres (con espacios), NO tu contraseña de Gmail.  
+> **MAIL_SCHEME** debe ser `smtp` (para puerto 587 STARTTLS) o `smtps` (para puerto 465). El valor `tls` no es válido en Laravel 13.
+
+### 4. Generar la clave de la aplicación
+
+```bash
+php artisan key:generate
+```
+
+### 5. Crear la base de datos
+
+Crea la base de datos en MySQL:
+
+```sql
+CREATE DATABASE bovweight CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### 6. Ejecutar migraciones y seeders
+
+```bash
+php artisan migrate --seed
+```
+
+Esto ejecuta todas las migraciones y pobla la base de datos con datos de prueba.
+
+**Credenciales de prueba creadas por el seeder:**
+
+| Correo | Contraseña | Rol |
+|---|---|---|
+| `admin@bovweight.com` | `password123` | Administrador |
+| `ganadero@bovweight.com` | `password123` | Ganadero |
+| `veterinario@bovweight.com` | `password123` | Veterinario |
+
+### 7. Iniciar el servidor de desarrollo
+
+```bash
+php artisan serve
+```
+
+La API estará disponible en `http://localhost:8000/api`.
+
+---
+
+## Comandos útiles
+
+```bash
+# Reiniciar BD y re-sembrar datos de prueba
+php artisan migrate:fresh --seed
+
+# Ejecutar tests (usan SQLite in-memory, no afectan tu BD local)
+php artisan test
+
+# Ejecutar solo los tests del Módulo 1
+php artisan test --compact tests/Feature/AuthTest.php tests/Feature/UsuarioTest.php tests/Feature/SolicitudRegistroTest.php
+
+# Formatear código con Laravel Pint
+./vendor/bin/pint
+
+# Ver rutas registradas
+php artisan route:list
+```
+
+---
+
+## Estructura del proyecto
+
+```
+app/
+├── Contracts/          # Interfaces (IUserRepository, ISolicitudRegistroRepository, IUserFactory)
+├── Factories/          # Patrón Factory — creación de usuarios por tipo
+├── Repositories/       # Patrón Repository — acceso a datos con Eloquent
+├── Events/             # Patrón Observer — eventos del dominio
+├── Listeners/          # Handlers de eventos (envío de correos)
+├── Mail/               # Mailables (plantillas de correo)
+├── Services/           # Lógica de negocio
+├── Http/
+│   ├── Controllers/Api/
+│   ├── Middleware/     # EsAdministrador
+│   ├── Requests/       # Validación de inputs
+│   └── Resources/      # Formato de respuestas JSON
+└── Models/
+```
+
+---
+
+## Endpoints principales
+
+### Públicos
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| POST | `/api/auth/login` | Login, retorna Bearer token |
+| POST | `/api/auth/forgot-password` | Envía correo de recuperación |
+| POST | `/api/auth/reset-password` | Restablece contraseña |
+| POST | `/api/solicitudes` | Enviar solicitud de registro |
+
+### Autenticados (Bearer token)
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| GET | `/api/auth/me` | Datos del usuario actual |
+| POST | `/api/auth/logout` | Cierra sesión |
+
+### Solo administrador
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| GET/POST | `/api/usuarios` | Listar / crear usuarios |
+| GET/PUT/DELETE | `/api/usuarios/{id}` | Ver / editar / eliminar usuario |
+| GET | `/api/solicitudes` | Listar todas las solicitudes |
+| GET | `/api/solicitudes/pendientes` | Listar solicitudes pendientes |
+| PUT | `/api/solicitudes/{id}/revisar` | Aprobar o rechazar solicitud |
+
+---
+
+## Notas de configuración de correo
+
+El sistema envía correos automáticamente en tres situaciones:
+- Al crear un usuario desde el panel admin → se envían sus credenciales
+- Al aprobar una solicitud de registro → se envían las credenciales al solicitante
+- Al rechazar una solicitud de registro → se notifica al solicitante con el motivo
+
+Para que funcione en local, configura correctamente las variables `MAIL_*` en `.env` con una cuenta Gmail y su App Password. Si no necesitas correos durante el desarrollo, puedes usar el driver `log`:
+
+```env
+MAIL_MAILER=log
+```
+
+Esto escribe los correos en `storage/logs/laravel.log` en lugar de enviarlos.
