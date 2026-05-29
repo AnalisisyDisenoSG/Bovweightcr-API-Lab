@@ -6,7 +6,7 @@ use App\Models\User;
 use Database\Seeders\TipoUsuarioSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-
+//testeo
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
